@@ -1,0 +1,38 @@
+version: '3'
+services:
+  # Premier service : le serveur express
+  app:
+    container_name: app
+    # On utilise le Dockerfile comme image source
+    build: .
+    # On utilise le port 3000
+    ports:
+      - 3000:3000
+    # Dans les variables d'environnement on met le port
+    # et le host de la DB postgres (pas obligatoire)
+    environment:
+      POSTGRES_HOST: pg://postgres:mysecretpassword@postgres:5432
+      PORT: 3000
+    # On dit qu'on a besoin que postgres soit up pour lancer le service
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    # Pour lancer le serveur express
+    command: npm start
+
+  # Le 2nd service : postgres
+  postgres:
+    container_name: postgres
+    restart: always
+    image: postgres:11.2-alpine
+    ports:
+      - 5432:5432
+    # Param de base...
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: sklearn
+
+
+# Lancer ~ docker-compose up -d
+# ou bien un service après l'autre (en commencant par la DB)
